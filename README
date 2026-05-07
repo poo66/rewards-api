@@ -1,0 +1,351 @@
+# Rewards API – Spring Boot Project
+
+## Project Overview
+
+This project is a Spring Boot RESTful Web API developed for calculating customer reward points based on purchase transactions over a three-month period.
+
+A retailer offers reward points to customers based on the following rules:
+
+* 2 points for every dollar spent over $100 in each transaction
+* 1 point for every dollar spent between $50 and $100 in each transaction
+* No points for purchases of $50 or less
+
+### Example
+
+For a transaction of $120:
+
+* Amount between $50 and $100 → 50 points
+* Amount above $100 → 20 × 2 = 40 points
+
+**Total Reward Points = 90**
+
+The API calculates:
+
+* Reward points earned by each customer per month
+* Total reward points earned by each customer across all months
+
+---
+
+## Technologies Used
+
+* Java 17 (or Java 11)
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* H2 In-Memory Database
+* Maven
+* JUnit 5
+* Mockito
+* MockMvc
+* Eclipse / Spring Tool Suite (STS)
+
+---
+
+## Project Structure
+
+```text
+rewards-api
+│
+├── src/main/java/com/rewards/api
+│   │
+│   ├── controller
+│   │   └── RewardController.java
+│   │
+│   ├── service
+│   │   └── RewardService.java
+│   │
+│   ├── repository
+│   │   └── TransactionRepository.java
+│   │
+│   ├── model
+│   │   └── Transaction.java
+│   │
+│   ├── dto
+│   │   └── RewardResponse.java
+│   │
+│   ├── exception
+│   │   ├── ResourceNotFoundException.java
+│   │   └── GlobalExceptionHandler.java
+│   │
+│   ├── util
+│   │   └── RewardCalculator.java
+│   │
+│   └── RewardsApiApplication.java
+│
+├── src/main/resources
+│   ├── application.properties
+│   └── data.sql
+│
+├── src/test/java/com/rewards/api
+│   ├── controller
+│   │   └── RewardControllerTest.java
+│   │
+│   ├── service
+│   │   └── RewardServiceTest.java
+│   │
+│   └── util
+│       └── RewardCalculatorTest.java
+│
+└── pom.xml
+```
+
+---
+
+## API Endpoint
+
+### Get Rewards by Customer ID
+
+```http
+GET /api/rewards/{customerId}
+```
+
+### Example Request
+
+```http
+GET /api/rewards/101
+```
+
+### Example Response
+
+```json
+{
+  "customerId": 101,
+  "customerName": "John",
+  "monthlyRewards": {
+    "January": 90,
+    "February": 25,
+    "March": 150
+  },
+  "totalRewards": 265
+}
+```
+
+---
+
+## Implementation Details
+
+### Reward Calculation Logic
+
+The reward calculation is implemented in:
+
+```text
+RewardCalculator.java
+```
+
+### Rules Applied
+
+```java
+if (amount > 100) {
+    points += (amount - 100) * 2;
+    points += 50;
+} else if (amount > 50) {
+    points += amount - 50;
+}
+```
+
+### Dynamic Month Calculation
+
+Months are not hardcoded.
+
+Month names are dynamically generated using:
+
+```java
+transactionDate.getMonth()
+               .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+```
+
+This satisfies the requirement:
+
+**Do not hardcode the months**
+
+---
+
+## Database Configuration
+
+The project uses:
+
+```text
+H2 In-Memory Database
+```
+
+This helps:
+
+* easy local testing
+* no external database setup
+* faster execution
+* simplified demonstration for interview assignment
+
+### H2 Console
+
+```http
+http://localhost:8080/h2-console
+```
+
+### Login Details
+
+| Property | Value                 |
+| -------- | --------------------- |
+| JDBC URL | jdbc:h2:mem:rewardsdb |
+| Username | sa                    |
+| Password | (blank)               |
+
+---
+
+## Sample Data
+
+Initial transaction data is inserted using:
+
+```text
+data.sql
+```
+
+This includes:
+
+* multiple customers
+* multiple transactions
+* multiple months
+* edge cases for reward calculation
+
+---
+
+## Exception Handling
+
+Global exception handling is implemented using:
+
+```text
+GlobalExceptionHandler.java
+```
+
+### Scenarios Covered
+
+* Customer not found
+* Invalid customer ID
+* Empty transaction list
+* Negative test scenarios
+
+### Example Error Response
+
+```json
+{
+  "message": "Customer not found"
+}
+```
+
+---
+
+## Unit and Integration Testing
+
+Test cases are included for:
+
+### Unit Tests
+
+* reward calculation validation
+* boundary value testing
+* zero points scenarios
+* multiple transactions
+* multiple customers
+
+### Integration Tests
+
+* REST endpoint validation
+* response status verification
+* exception scenarios
+
+### Tools Used
+
+* JUnit 5
+* Mockito
+* MockMvc
+
+This satisfies the requirement:
+
+**Unit and integration tests present in code**
+
+---
+
+## How to Run the Project
+
+### Step 1
+
+Import project into Spring Tool Suite (STS)
+
+### Step 2
+
+Update Maven dependencies
+
+```text
+Right Click Project → Maven → Update Project
+```
+
+### Step 3
+
+Run application
+
+```text
+Right Click RewardsApiApplication.java
+→ Run As
+→ Spring Boot App
+```
+
+### Step 4
+
+Test API using browser or Postman
+
+```http
+http://localhost:8080/api/rewards/101
+```
+
+---
+
+## Coding Standards Followed
+
+* proper package structure
+* meaningful class names
+* meaningful method names
+* JavaDocs at class and method levels
+* formatted code
+* exception handling
+* standard Spring Boot architecture
+
+---
+
+## Assumptions Made
+
+* customer ID is unique
+* transaction amount is always valid positive input
+* all transactions are available in database
+* reward points are calculated per transaction, not cumulative amount
+* three-month period is derived dynamically from transaction data
+
+---
+
+## Git Ignore
+
+The following folders/files should not be committed:
+
+```text
+/target
+/bin
+/.idea
+*.class
+```
+
+---
+
+## Submission Notes
+
+* GitHub repository uploaded
+* No ZIP file uploaded
+* No target/bin folders committed
+* README included
+* Unit tests and integration tests included
+* JavaDocs added
+* Exception handling implemented
+
+---
+
+## Author
+
+Spring Boot Web API Developer Assignment Solution
+
+Developed as part of retailer rewards program implementation task.
