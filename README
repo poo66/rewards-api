@@ -1,33 +1,17 @@
 # Rewards API – Spring Boot Project
+A Spring Boot REST API that calculates customer reward points based on transactions from the last 3 months.
 
-## Project Overview
-
-This project is a Spring Boot RESTful Web API developed for calculating customer reward points based on purchase transactions over a three-month period.
-
-A retailer offers reward points to customers based on the following rules:
-
-* 2 points for every dollar spent over $100 in each transaction
-* 1 point for every dollar spent between $50 and $100 in each transaction
-* No points for purchases of $50 or less
-
-### Example
-
-For a transaction of $120:
-
-* Amount between $50 and $100 → 50 points
-* Amount above $100 → 20 × 2 = 40 points
-
-**Total Reward Points = 90**
-
-The API calculates:
-
-* Reward points earned by each customer per month
-* Total reward points earned by each customer across all months
-
----
-
-## Technologies Used
-
+# Features
+Calculate reward points per customer
+Monthly reward aggregation
+Total reward points calculation
+Fetch rewards for all customers
+RESTful API design
+Global exception handling
+H2 in-memory database
+Unit tests for Service, Controller, and Repository
+--------------------------------------------------------
+# Technologies Used
 * Java 17 (or Java 11)
 * Spring Boot
 * Spring Web
@@ -39,75 +23,33 @@ The API calculates:
 * MockMvc
 * Eclipse / Spring Tool Suite (STS)
 
----
+--------------------------------------------------------------
+# Project Overview
+This project is a Spring Boot RESTful Web API developed for calculating customer reward points based on purchase transactions over a three-month period.
+A retailer offers reward points to customers based on the following rules:
+* 2 points for every dollar spent over $100 in each transaction
+* 1 point for every dollar spent between $50 and $100 in each transaction
+* No points for purchases of $50 or less
 
-## Project Structure
+# Example
+For a transaction of $120:
+* Amount between $50 and $100 → 50 points
+* Amount above $100 → 20 × 2 = 40 points
 
-```text
-rewards-api
-│
-├── src/main/java/com/rewards/api
-│   │
-│   ├── controller
-│   │   └── RewardController.java
-│   │
-│   ├── service
-│   │   └── RewardService.java
-│   │
-│   ├── repository
-│   │   └── TransactionRepository.java
-│   │
-│   ├── model
-│   │   └── Transaction.java
-│   │
-│   ├── dto
-│   │   └── RewardResponse.java
-│   │
-│   ├── exception
-│   │   ├── ResourceNotFoundException.java
-│   │   └── GlobalExceptionHandler.java
-│   │
-│   ├── util
-│   │   └── RewardCalculator.java
-│   │
-│   └── RewardsApiApplication.java
-│
-├── src/main/resources
-│   ├── application.properties
-│   └── data.sql
-│
-├── src/test/java/com/rewards/api
-│   ├── controller
-│   │   └── RewardControllerTest.java
-│   │
-│   ├── service
-│   │   └── RewardServiceTest.java
-│   │
-│   └── util
-│       └── RewardCalculatorTest.java
-│
-└── pom.xml
-```
+**Total Reward Points = 90**
 
----
+The API calculates:
 
-## API Endpoint
+* Reward points earned by each customer per month
+* Total reward points earned by each customer across all months
+---------------------------------------------------------------
+# API Endpoint
 
-### Get Rewards by Customer ID
+## Get Rewards by Customer ID : GET /api/rewards/{customerId}
 
-```http
-GET /api/rewards/{customerId}
-```
+Example Request - http://localhost:8080/api/rewards/1
 
-### Example Request
-
-```http
-GET /api/rewards/101
-```
-
-### Example Response
-
-```json
+Example Response - 
 {
   "customerId": 101,
   "customerName": "John",
@@ -118,70 +60,43 @@ GET /api/rewards/101
   },
   "totalRewards": 265
 }
-```
 
----
+-------------------------------------------------------------
 
-## Implementation Details
-
-### Reward Calculation Logic
-
-The reward calculation is implemented in:
-
-```text
-RewardCalculator.java
-```
-
-### Rules Applied
-
-```java
+# Implementation Details
+The reward calculation is implemented in RewardCalculator.java.
+Rules Applied :
 if (amount > 100) {
     points += (amount - 100) * 2;
     points += 50;
 } else if (amount > 50) {
     points += amount - 50;
 }
-```
-
-### Dynamic Month Calculation
+----------------------------------------------------------------------
+# Dynamic Month Calculation
 
 Months are not hardcoded.
-
 Month names are dynamically generated using:
 
-```java
 transactionDate.getMonth()
                .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-```
 
 This satisfies the requirement:
-
 **Do not hardcode the months**
+-----------------------------------------------------------------------
+# Database Configuration
 
----
-
-## Database Configuration
-
-The project uses:
-
-```text
-H2 In-Memory Database
-```
-
+The project uses: H2 In-Memory Database
 This helps:
-
 * easy local testing
 * no external database setup
 * faster execution
 * simplified demonstration for interview assignment
 
-### H2 Console
-
-```http
+# H2 Console
 http://localhost:8080/h2-console
-```
 
-### Login Details
+# Login Details
 
 | Property | Value                 |
 | -------- | --------------------- |
@@ -189,55 +104,37 @@ http://localhost:8080/h2-console
 | Username | sa                    |
 | Password | (blank)               |
 
----
+---------------------------------------------------------
 
-## Sample Data
+# Sample Data
 
-Initial transaction data is inserted using:
-
-```text
-data.sql
-```
-
+Initial transaction data is inserted using: data.sql
 This includes:
-
 * multiple customers
 * multiple transactions
 * multiple months
 * edge cases for reward calculation
+-------------------------------------------------------
 
----
+# Exception Handling
 
-## Exception Handling
-
-Global exception handling is implemented using:
-
-```text
-GlobalExceptionHandler.java
-```
-
-### Scenarios Covered
-
+Global exception handling is implemented using: GlobalExceptionHandler.java
+Scenarios Covered
 * Customer not found
 * Invalid customer ID
 * Empty transaction list
 * Negative test scenarios
 
-### Example Error Response
-
-```json
+# Example Error Response
 {
   "message": "Customer not found"
 }
-```
-
----
-
-## Unit and Integration Testing
+------------------------------------------------
+# Unit and Integration Testing
 
 Test cases are included for:
 
-### Unit Tests
+## Unit Tests
 
 * reward calculation validation
 * boundary value testing
@@ -245,13 +142,13 @@ Test cases are included for:
 * multiple transactions
 * multiple customers
 
-### Integration Tests
+## Integration Tests
 
 * REST endpoint validation
 * response status verification
 * exception scenarios
 
-### Tools Used
+## Tools Used
 
 * JUnit 5
 * Mockito
@@ -260,37 +157,24 @@ Test cases are included for:
 This satisfies the requirement:
 
 **Unit and integration tests present in code**
-
----
+----------------------------------------------------
 
 ## How to Run the Project
 
-### Step 1
-
+* Step 1
 Import project into Spring Tool Suite (STS)
 
-### Step 2
-
+* Step 2
 Update Maven dependencies
-
-```text
 Right Click Project → Maven → Update Project
-```
 
-### Step 3
-
+* Step 3
 Run application
-
-```text
 Right Click RewardsApiApplication.java
 → Run As
 → Spring Boot App
-```
 
-### Step 4
-
+* Step 4
 Test API using browser or Postman
-
-```http
 http://localhost:8080/api/rewards/101
-```
+
